@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Colorblind Filter</title>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden; 
+    }
+
+    #iframe-container {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      transition: filter 0.3s ease;
+    }
+  </style>
+</head>
+<body>
+  <div style="position:fixed; z-index: 999; top: 10px; left: 10px; background-color: white; padding: 10px; border-radius: 5px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);">
+      <button onclick="applyFilter('normal')">Normal</button>
+      <button onclick="applyFilter('protanopia')">Protanopia</button>
+      <button onclick="applyFilter('deuteranopia')">Deuteranopia</button>
+      <button onclick="applyFilter('tritanopia')">Tritanopia</button>
+      <button onclick="applyFilter('achromatopsia')">Achromatopsia</button>
+  </div>
+  
+  <div id="iframe-container">
+      <iframe src="https://deadshot.io" style="width: 100%; height: 100%; border: none;"></iframe>
+  </div>
+  
+  <script>
+    const filters = {
+      normal: 'none',
+      protanopia: 'url(#protanopia)',
+      deuteranopia: 'url(#deuteranopia)',
+      tritanopia: 'url(#tritanopia)',
+      achromatopsia: 'grayscale(100%)', // Complete colorblindness
+    };
+
+    function applyFilter(type) {
+      const container = document.getElementById('iframe-container');
+      if (type === 'normal') {
+        container.style.filter = filters.normal;
+      } else {
+        container.style.filter = filters[type];
+      }
+    }
+  </script>
+
+  <!-- SVG Filters -->
+  <svg xmlns="http://www.w3.org/2000/svg" version="1.1">
+    <defs>
+      <filter id="protanopia">
+        <feColorMatrix in="SourceGraphic" type="matrix"
+          values="0.567, 0.433, 0,     0, 0
+                  0.558, 0.442, 0,     0, 0
+                  0,     0.242, 0.758, 0, 0
+                  0,     0,     0,     1, 0"/>
+      </filter>
+      <filter id="deuteranopia">
+        <feColorMatrix in="SourceGraphic" type="matrix"
+          values="0.625, 0.375, 0,   0, 0
+                  0.7,   0.3,   0,   0, 0
+                  0,     0.3,   0.7, 0, 0
+                  0,     0,     0,   1, 0"/>
+      </filter>
+      <filter id="tritanopia">
+        <feColorMatrix in="SourceGraphic" type="matrix"
+          values="0.95, 0.05,  0,     0, 0
+                  0,    0.433, 0.567, 0, 0
+                  0,    0.475, 0.525, 0, 0
+                  0,    0,     0,     1, 0"/>
+      </filter>
+      <filter id="achromatopsia">
+        <feColorMatrix in="SourceGraphic" type="matrix"
+          values="0.299, 0.587, 0.114, 0, 0
+                  0.299, 0.587, 0.114, 0, 0
+                  0.299, 0.587, 0.114, 0, 0
+                  0,     0,     0,     1, 0"/>
+      </filter>
+    </defs>
+  </svg>
+</body>
+</html>
