@@ -200,8 +200,8 @@ ipcMain.handle('reload-deadshot', () => {
           client = require('discord-rich-presence')('1324609716252311602');
           client.updatePresence({
             state: 'Lambda Client',
-            details: 'Wake up, Mr. Treeman...',
-            largeImageText: "real shit",
+            details: arg.split(':')[2] || "Wake up, Mr. Treeman...",
+            largeImageText: "Lambda on top!",
             largeImageKey: "lambda",
             startTimestamp: Date.now()
           });

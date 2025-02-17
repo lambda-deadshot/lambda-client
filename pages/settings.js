@@ -2,8 +2,19 @@ let settings;
 settings = window.electron.getSettings();
 let rpcEnabled = settings.rpc || false;
 
+function fireToast(success, message) {
+    const toastContainer = document.getElementById('status-toast');
+    if (!toastContainer) return;
+    const alert = document.createElement('div');
+    alert.className = `px-2 py-1 alert  ${success ? 'alert-success' : 'alert-error'}`;
+    alert.innerHTML = `<span>${message}</span>`; 
+
+    toastContainer.appendChild(alert);
+    setTimeout(() => alert.remove(), 2000); 
+}
+
 document.getElementById('rpc-toggle').addEventListener("change", () => {
-    window.electron.sendSettingChange(`rpc:${!settings.rpc}`)
+    window.electron.sendSettingChange(`rpc:${!settings.rpc}:${document.getElementById('rpc-text').value}`)
     settings.rpc = !settings.rpc
 });
 
@@ -13,15 +24,7 @@ document.getElementById('brainrot-toggle').addEventListener("change", () => {
 });
 
 window.electron.on('skin-upload', (_, { success, message }) => {
-    const toastContainer = document.getElementById('status-toast');
-    if (!toastContainer) return;
-
-    const alert = document.createElement('div');
-    alert.className = `px-2 py-1 alert  ${success ? 'alert-success' : 'alert-error'}`;
-    alert.innerHTML = `<span>${message}</span>`; // Set content using innerHTML for simplicity
-
-    toastContainer.appendChild(alert);
-    setTimeout(() => alert.remove(), 2000); // Remove the alert after 2 seconds
+    fireToast(success, message)
 });
 
 
@@ -260,28 +263,38 @@ const previewUrls = [
   const blueSlider = document.getElementById('blueSlider');
   const alphaSlider = document.getElementById('alphaSlider');
   const feColorMatrix = document.querySelector('#customFilter feColorMatrix');
+  const influenceSlider = document.getElementById('influenceSlider');
+  let influence = parseFloat(influenceSlider.value) || 0.1; // Default influence
 
-  // Update the filter matrix using slider values (diagonal matrix)
-  function updateFilter() {
+  // Update influence value when slider changes
+  influenceSlider.addEventListener('input', () => {
+    influence = parseFloat(influenceSlider.value) || 0;
+    updateFilter(); // Apply new influence immediately
+  });
+  
+
+// Update the filter matrix using slider values (with subtle cross-channel influence)
+function updateFilter() {
     const red   = parseFloat(redSlider.value)   || 0;
     const green = parseFloat(greenSlider.value) || 0;
     const blue  = parseFloat(blueSlider.value)  || 0;
     const alpha = parseFloat(alphaSlider.value) || 0;
-    // Construct a 4x5 matrix: each slider sets the diagonal for its output channel.
+  
     const matrixValues = [
-      red,   0,     0,     0, 0,
-      0,   green,   0,     0, 0,
-      0,     0,   blue,    0, 0,
-      0,     0,     0,   alpha, 0
+      red,   green * influence, blue * influence, 0, 0,   // Red row
+      red * influence, green,   blue * influence, 0, 0,   // Green row
+      red * influence, green * influence, blue,   0, 0,   // Blue row
+      red * influence, green * influence, blue * influence, alpha, 0  // Alpha row
     ];
+  
     feColorMatrix.setAttribute('values', matrixValues.join(' '));
   }
-
-  // Listen for slider changes
+  
+  // Listen for color slider changes
   [redSlider, greenSlider, blueSlider, alphaSlider].forEach(slider => {
     slider.addEventListener('input', updateFilter);
   });
-
+  
   // On form submission, send the computed matrix as an object to Electron
   const form = document.getElementById('customFilterForm');
   form.addEventListener('submit', (e) => {
