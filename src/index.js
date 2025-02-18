@@ -130,7 +130,11 @@ mainWindow.loadURL("https://deadshot.io")
 
   ipcMain.handle('custom-cb-filter', (event, matrix) => {
     setOption("cbFilter", "custom")
-    setOption("customFilterMatrix", matrix)
+    const formattedMatrix = Object.keys(matrix).reduce((acc, key) => {
+      acc[key] = JSON.stringify(matrix[key]);  
+      return acc;
+    }, {});
+    setOption("customFilterMatrix", formattedMatrix)
     mainWindow.webContents.executeJavaScript(`updateCustomFilter(${JSON.stringify(matrix)})`)
   })
 
