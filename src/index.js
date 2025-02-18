@@ -8,36 +8,48 @@ const { spawn } = require("child_process")
 const utils = require("./utils.js")
 const https = require('https');
 
+
+let store;
+(async () => {
+    const { default: Store } = await import("electron-store");
+    const path = (await import("path")).default;
+    const { app } = await import("electron");
+
+    // Set custom storage location
+    const customPath = path.join(app.getPath("documents"), "Lambda");
+    
+    store = new Store({
+        cwd: customPath,
+        name: "config",
+    });
+
+    console.log("Store initialized at:", store.path);
+})();
+function getOption(name) {
+  if (!store) {
+    throw new Error("Store is not initialized yet!");
+}
+    return store.get(name);
+}
+function setOption(name, value) {
+  if (!store) {
+    throw new Error("Store is not initialized yet!");
+}
+    store.set(name, value);
+}
+function getAllSettings() {
+  if (!store) {
+    throw new Error("Store is not initialized yet!");
+  }
+  return store.store;
+}
+
 if (started) {
   app.quit();
 }
-
-
 ipcMain.handle('open-rs-folder', (event, folder) => {
   spawn('explorer.exe', [path.join(app.getPath("documents"), `Lambda/Swapper/${folder}`)]);
 })
-
-// settings file init and expose
-const defaultSettings = {
-  rpc: false
-}
-const settingsPath = path.join(os.homedir(), 'Documents', 'Lambda', 'settings.json')
-let settingsJson;
-
-if (fs.existsSync(settingsPath)) {
-  settingsJson = JSON.parse(fs.readFileSync(settingsPath, 'utf-8'));
-} else {
-  const dirPath = path.dirname(settingsPath);
-  if (!fs.existsSync(dirPath)) {
-    fs.mkdirSync(dirPath, { recursive: true });
-  }  
-fs.writeFileSync(settingsPath, JSON.stringify(defaultSettings, null, 2), 'utf-8');
-  settingsJson = defaultSettings;
-}
-
-ipcMain.handle('get-settings', async () => {
-  return settingsJson;
-});
 
 
 app.whenReady().then(() => {
@@ -61,6 +73,40 @@ const mainWindow = new BrowserWindow({
   }
 });
 
+const splash = new BrowserWindow({
+  width: 500, 
+  height: 300, 
+  frame: false,
+  transparent: true,
+  alwaysOnTop: true,
+  skipTaskbar: true,
+});
+splash.loadFile("pages/splash.html")
+splash.center()
+
+const settings = new BrowserWindow({
+  width: 700, 
+  height: 400, 
+  frame: true, // change to false
+  transparent: true,
+  alwaysOnTop: true,
+  skipTaskbar: true,
+  autoHideMenuBar: true,
+  show: false,
+  webPreferences: {
+    preload: path.join(__dirname, 'settings.preload.js'),
+  }
+});
+settings.loadFile("pages/settings.html")
+
+globalShortcut.register('F1', () => {
+  if (settings.isVisible()) {
+    settings.hide();
+  } else {
+    settings.show();
+  }
+});
+mainWindow.on("closed", () => settings.close());
 
 mainWindow.loadURL("https://deadshot.io")
   let isFirstLoad = true
@@ -76,6 +122,62 @@ mainWindow.loadURL("https://deadshot.io")
   mainWindow.hide();
 
   globalShortcut.register('F12', () => mainWindow.webContents.openDevTools())
+
+  ipcMain.handle('cb-filter', (event, filter) => {
+    setOption("cbFilter", filter)
+    mainWindow.webContents.executeJavaScript(`applyFilter('${filter}')`)
+  })
+
+  ipcMain.handle('custom-cb-filter', (event, matrix) => {
+    setOption("cbFilter", "custom")
+    setOption("customFilterMatrix", matrix)
+    mainWindow.webContents.executeJavaScript(`updateCustomFilter(${JSON.stringify(matrix)})`)
+  })
+
+
+
+  //settings stuff
+  ipcMain.handle('get-settings', async () => {
+    return getAllSettings();
+  });
+  let client;
+  client = require('discord-rich-presence')('1324609716252311602');
+  ipcMain.on('setting-change', (event, arg) => {
+    switch (arg.split(':')[0]) {
+      case 'rpc':
+        if (arg.split(':')[1] === 'true') {
+          client.updatePresence({
+            state: 'Lambda Client',
+            details: arg.split(':')[2] || settingsJson.rpcText || "Wake up, Mr. Treeman...",
+            largeImageText: "Lambda on top!",
+            largeImageKey: "lambda",
+            startTimestamp: Date.now()
+          });
+          setOption("rpc", true)
+          setOption("rpcText", arg.split(':')[2] || "Wake up, Mr. Treeman...")
+          console.log("[RPC]: Enabled!")
+        } else { 
+          client.disconnect();
+          setOption("rpc", false)
+          console.log('[RPC]: Disabled!')
+        }
+        break;
+      case 'brainrot':
+        if (arg.split(':')[1] == 'true') {
+          setOption("brainrot", true)
+          mainWindow.webContents.executeJavaScript('toggleBrainrot(true)')
+          console.log("[Brainrot]: Enabled!")
+        } else {
+          setOption("brainrot", false)
+          mainWindow.webContents.executeJavaScript('toggleBrainrot(false)')
+          console.log("[Brainrot]: Disabled!")
+        }
+        break;
+      default:
+        break;
+    }
+  })
+
 
   // Resource swapper
   swapper.replaceResources(mainWindow, app);
@@ -133,126 +235,5 @@ mainWindow.loadURL("https://deadshot.io")
         console.error('[SkinUpload]: Error:', error);
         return { success: false, message: error.message };
     }
-});
-ipcMain.handle('delete-skin', (event, file) => {
-  //special case for menu bg
-  if (file == "mainmenu") {
-    [0, 1, 2, 3, 4, 5].forEach(num => {
-      fs.rmSync(path.join(os.homedir(), 'Documents', 'Lambda', 'Swapper', `promo/background${num}.webp`))
-    })
-  } else {
-    if (fs.existsSync(path.join(os.homedir(), 'Documents', 'Lambda', 'Swapper', file))) {
-    fs.rmSync(path.join(os.homedir(), 'Documents', 'Lambda', 'Swapper', file))
-    return { success: true, message: `Deleted skin: ${file}` }
-    }
-  }
-})
-
-ipcMain.handle('reload-deadshot', () => {
-  mainWindow.reload()
-})
-
-
-
-  // Splash screen
-  const splash = new BrowserWindow({
-    width: 500, 
-    height: 300, 
-    frame: false,
-    transparent: true,
-    alwaysOnTop: true,
-    skipTaskbar: true,
   });
-  splash.loadFile("pages/splash.html")
-  splash.center()
-  
-  // Settings menu
-  const settings = new BrowserWindow({
-    width: 700, 
-    height: 400, 
-    frame: true, //change to false
-    transparent: true,
-    alwaysOnTop: true,
-    skipTaskbar: true,
-    autoHideMenuBar: true,
-    show: false,
-    webPreferences: {
-      preload: path.join(__dirname, 'settings.preload.js'),
-    }
-    
-  });
-  settings.loadFile("pages/settings.html")
-  globalShortcut.register('F1', () => {
-    if (settings.isVisible()) {
-      settings.hide();
-    } else {
-      settings.show();
-    }
-  });
-  mainWindow.on("closed", () => settings.close())
-
-  //settings stuff
-  let client;
-  ipcMain.on('setting-change', (event, arg) => {
-    switch (arg.split(':')[0]) {
-      case 'rpc':
-        if (arg.split(':')[1] === 'true') {
-          client = require('discord-rich-presence')('1324609716252311602');
-          client.updatePresence({
-            state: 'Lambda Client',
-            details: arg.split(':')[2] || "Wake up, Mr. Treeman...",
-            largeImageText: "Lambda on top!",
-            largeImageKey: "lambda",
-            startTimestamp: Date.now()
-          });
-          settingsJson.rpc = true;
-          fs.writeFileSync(settingsPath, JSON.stringify(settingsJson, null, 2), 'utf-8');
-          console.log("[RPC]: Enabled!")
-        } else { 
-          client.disconnect();
-          settingsJson.rpc = false;
-          fs.writeFileSync(settingsPath, JSON.stringify(settingsJson, null, 2), 'utf-8');
-          console.log('[RPC]: Disabled!')
-        }
-        break;
-      case 'brainrot':
-        if (arg.split(':')[1] === 'true') {
-          settingsJson.brainrot = true;
-          fs.writeFileSync(settingsPath, JSON.stringify(settingsJson, null, 2), 'utf-8');
-          mainWindow.webContents.executeJavaScript('toggleBrainrot(true)')
-          console.log("[Brainrot]: Enabled!")
-        } else {
-          settingsJson.brainrot = false;
-          fs.writeFileSync(settingsPath, JSON.stringify(settingsJson, null, 2), 'utf-8');
-          mainWindow.webContents.executeJavaScript('toggleBrainrot(false)')
-          console.log("[Brainrot]: Disabled!")
-        }
-        break;
-      default:
-        break;
-    }
-  })
-
-  ipcMain.handle('cb-filter', (event, filter) => {
-    mainWindow.webContents.executeJavaScript(`applyFilter('${filter}')`)
-  })
-
-  ipcMain.handle('custom-cb-filter', (event, matrix) => {
-    mainWindow.webContents.executeJavaScript(`updateCustomFilter(${JSON.stringify(matrix)})`)
-  })
-
-
-
-});
-
-
-app.on('window-all-closed', () => {
-  if (process.platform !== 'darwin') {
-    app.quit();
-  }
-});
-
-app.on('will-quit', () => {
-  // Unregister all shortcuts
-  globalShortcut.unregisterAll();
 });

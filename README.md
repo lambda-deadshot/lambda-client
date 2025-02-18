@@ -38,3 +38,6 @@ Lambda Client adds the following features to the game:
 **Aimbot**
 - The Lambda Client team is proud to offer one of the only working aimbots in the game. Because the developer of Deadshot doesn't really appreciate people making cheats, we are charging for its use. This is because it takes much more maintenance, as the relavent game code is repeatedly obfuscated with every update.
 - To unlock Lambda Client Premium, just send us $5 on CashApp, at $sillyindividual43. In the optional note, write "Lambda Client Premium", followed by your Deadshot username. For example: `Lambda Client Premium - justatree`
+
+## Credit where credit is due
+- Quasar team (LordPhyre, jcjms, CaptainCool, Gato) - Ripped a lot of code and ideas from Quasar

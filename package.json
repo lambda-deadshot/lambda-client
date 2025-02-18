@@ -33,6 +33,7 @@
     "daisyui": "^4.12.23",
     "discord-rich-presence": "^0.0.8",
     "electron-squirrel-startup": "^1.0.1",
+    "electron-store": "^10.0.1",
     "gar": "^1.0.4",
     "original-fs": "^1.2.0",
     "path": "^0.12.7",
