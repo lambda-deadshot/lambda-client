@@ -1,294 +1,634 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en" data-theme="black">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="../src/index.css">
-  <title>Settings</title>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="../src/index.css" />
+    <title>Settings</title>
     <style>
-    :root {
-      --tw-prose-body: white;
-      --tw-prose-headings: white;
-      --tw-prose-links: white;
-      --tw-prose-links-hover: gray;
-    }
-
-  </style>
-  <script src="https://cdn.jsdelivr.net/npm/theme-change@2.0.2/index.js"></script>
-</head>
-<body class="overflow-hidden h-screen rounded-md border border-solid text-base-content bg-base-100">
-  <div id="status-toast" class="toast toast-top toast-end"> 
-
-</div>
-  <div class="flex flex-col h-full">
+      :root {
+        --tw-prose-body: white;
+        --tw-prose-headings: white;
+        --tw-prose-links: white;
+        --tw-prose-links-hover: gray;
+      }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/theme-change@2.0.2/index.js"></script>
+  </head>
+  <body
+    class="overflow-hidden h-screen rounded-md border border-solid text-base-content bg-base-100"
+  >
+    <div id="status-toast" class="toast toast-top toast-end"></div>
+    <div class="flex flex-col h-full">
       <!-- Header -->
       <div class="flex items-center p-4 rounded-md shadow-md bg-base-100">
-        <svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 122.88 122.88">
-          <defs><style>.cls-1{fill:#ffffff;}</style></defs>
-          <path class="cls-1" d="M76.15,93.79l-13.79-35L42.13,90.69H29.45L57.7,45.08l-3.17-9h-11V25.32H62.36L84,80.31l9.51-3.09,3.17,10.65L76.15,93.79Zm46.73-32.35a61.46,61.46,0,1,1-18-43.44,61.25,61.25,0,0,1,18,43.44ZM96.3,96.29a49.3,49.3,0,1,0-34.86,14.44A49.15,49.15,0,0,0,96.3,96.29Z"/>
+        <svg
+          class="w-6 h-6"
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 122.88 122.88"
+        >
+          <defs>
+            <style>
+              .cls-1 {
+                fill: #ffffff;
+              }
+            </style>
+          </defs>
+          <path
+            class="cls-1"
+            d="M76.15,93.79l-13.79-35L42.13,90.69H29.45L57.7,45.08l-3.17-9h-11V25.32H62.36L84,80.31l9.51-3.09,3.17,10.65L76.15,93.79Zm46.73-32.35a61.46,61.46,0,1,1-18-43.44,61.25,61.25,0,0,1,18,43.44ZM96.3,96.29a49.3,49.3,0,1,0-34.86,14.44A49.15,49.15,0,0,0,96.3,96.29Z"
+          />
         </svg>
         <h1 class="flex-grow text-2xl font-semibold text-center">Settings</h1>
       </div>
-  
+
       <div class="flex overflow-hidden flex-grow">
         <!-- Sidebar -->
         <div class="p-4 w-1/3 rounded-md shadow-md bg-base-100">
           <ul class="menu menu-compact text-base-content">
-            <li class="hover:bg-base-300"><a href="#" onclick="showPage('general')">General</a></li>
-            <li class="hover:bg-base-300"><a href="#" onclick="showPage('appearance')">Appearance</a></li>
-            <li class="hover:bg-base-300"><a href="#" onclick="showPage('swapper')">Swapper</a></li>
-            <li class="hover:bg-base-300"><a href="#" onclick="showPage('aimbot')">Aimbot</a></li>
+            <li class="hover:bg-base-300">
+              <a href="#" onclick="showPage('general')">General</a>
+            </li>
+            <li class="hover:bg-base-300">
+              <a href="#" onclick="showPage('appearance')">Appearance</a>
+            </li>
+            <li class="hover:bg-base-300">
+              <a href="#" onclick="showPage('swapper')">Swapper</a>
+            </li>
+            <li class="hover:bg-base-300">
+              <a href="#" onclick="showPage('aimbot')">Aimbot</a>
+            </li>
           </ul>
         </div>
-  
-        <!-- Content Area -->
+
         <div class="overflow-y-auto p-4 space-y-4 w-2/3 rounded-md bg-base-100">
-            <!-- General Settings -->
-            <div id="general" class="settings-page">
-              <h2 class="mb-2 text-xl font-semibold">General Settings</h2>
-          
-              <!-- Discord RPC -->
-              <div class="flex items-center space-x-2">
-                <label class="mb-0 w-1/2 label text-base-content">Discord RPC</label>
-                <input type="checkbox" class="toggle toggle-sm" id="rpc-toggle">
-              </div>
-              <div class="flex items-center space-x-2">
-                <label class="mb-0 w-1/2 label text-base-content">RPC Text</label>
-                <input type="text" class="input input-primary input-sm" value="Wake up, Mr. Treeman..." placeholder="Wake up, Mr. Treeman..." id="rpc-text">
-                <button onclick="window.electron.sendSettingChange(`rpc:true:${document.getElementById('rpc-text').value}`)" class="btn btn-primary btn-sm">Okay</button>
-              </div>
+          <div id="general" class="settings-page">
+            <h2 class="mb-2 text-xl font-semibold">General Settings</h2>
 
+            <div class="flex items-center space-x-2">
+              <label class="mb-0 w-1/2 label text-base-content"
+                >Discord RPC</label
+              >
+              <input type="checkbox" class="toggle toggle-sm" id="rpc-toggle" />
             </div>
-
-            <div id="swapper" class="hidden settings-page">
-                <h2 class="mb-2 text-xl font-bold">Resource Swapper</h2>
-                <button class="border border-solid border-secondary btn btn-sm hover:border-white hover:scale-[1.02] active:scale-95" onclick="window.electron.reloadDS()">Apply Changes</button>
-                <h1 class="mt-2 font-semibold text-md">AR</h1>
-                <span class="flex flex-col ml-4">
-                  <h1 class="text-sm">Weapon</h1>
-                   <span class="flex flex-row">
-                    <input accept="image/webp" id="ar-upload" type="file" class="w-full max-w-xs file-input file-input-xs file-input-bordered" />
-                    <button class="ml-2 border border-solid border-secondary btn btn-xs hover:border-white hover:scale-[1.02] active:scale-95" onclick="window.electron.deleteSkin('weapons/ar2/arcomp.webp')">Default</button>
-                  </span>
-                  <h1 class="text-sm">Player</h1>
-                  <span class="flex flex-row">
-                   <input accept="image/webp" id="ar-player-upload" type="file" class="w-full max-w-xs file-input file-input-xs file-input-bordered" />
-                   <button class="ml-2 border border-solid border-secondary btn btn-xs hover:border-white hover:scale-[1.02] active:scale-95" onclick="window.electron.deleteSkin('character/rookie.webp')">Default</button>
-                 </span>
-                </span>
-               
-
-                <h1 class="mt-2 font-semibold text-md">Sniper</h1>
-                <span class="flex flex-col ml-4">
-                  <h1 class="text-sm">Weapon</h1>
-                   <span class="flex flex-row">
-                    <input accept="image/webp" id="awp-upload" type="file" class="w-full max-w-xs file-input file-input-xs file-input-bordered" />
-                    <button class="ml-2 border border-solid border-secondary btn btn-xs hover:border-white hover:scale-[1.02] active:scale-95" onclick="window.electron.deleteSkin('weapons/awp/awpcomp.webp')">Default</button>
-                  </span>
-                  <h1 class="text-sm">Player</h1>
-                  <span class="flex flex-row">
-                   <input accept="image/webp" id="awp-player-upload" type="file" class="w-full max-w-xs file-input file-input-xs file-input-bordered" />
-                   <button class="ml-2 border border-solid border-secondary btn btn-xs hover:border-white hover:scale-[1.02] active:scale-95" onclick="window.electron.deleteSkin('character/tuxedo.webp')">Default</button>
-                 </span>
-                </span>
-
-                <h1 class="mt-2 font-semibold text-md">SMG</h1>
-                <span class="flex flex-col ml-4">
-                  <h1 class="text-sm">Weapon</h1>
-                   <span class="flex flex-row">
-                    <input accept="image/webp" id="smg-upload" type="file" class="w-full max-w-xs file-input file-input-xs file-input-bordered" />
-                    <button class="ml-2 border border-solid border-secondary btn btn-xs hover:border-white hover:scale-[1.02] active:scale-95" onclick="window.electron.deleteSkin('weapons/vector/vectorcomp.webp')">Default</button>
-                  </span>
-                  <h1 class="text-sm">Player</h1>
-                  <span class="flex flex-row">
-                   <input accept="image/webp" id="smg-player-upload" type="file" class="w-full max-w-xs file-input file-input-xs file-input-bordered" />
-                   <button class="ml-2 border border-solid border-secondary btn btn-xs hover:border-white hover:scale-[1.02] active:scale-95" onclick="window.electron.deleteSkin('character/female.webp')">Default</button>
-                 </span>
-                </span>
-
-                <h1 class="mt-2 font-semibold text-md">Shotgun</h1>
-                <span class="flex flex-col ml-4">
-                  <h1 class="text-sm">Weapon</h1>
-                   <span class="flex flex-row">
-                    <input accept="image/webp" id="shotgun-upload" type="file" class="w-full max-w-xs file-input file-input-xs file-input-bordered" />
-                    <button class="ml-2 border border-solid border-secondary btn btn-xs hover:border-white hover:scale-[1.02] active:scale-95" onclick="window.electron.deleteSkin('weapons/shotgun/shotguncomp.webp')">Default</button>
-                  </span>
-                  <h1 class="text-sm">Player</h1>
-                  <span class="flex flex-row">
-                   <input accept="image/webp" id="shotgun-player-upload" type="file" class="w-full max-w-xs file-input file-input-xs file-input-bordered" />
-                   <button class="ml-2 border border-solid border-secondary btn btn-xs hover:border-white hover:scale-[1.02] active:scale-95" onclick="window.electron.deleteSkin('character/shotgunplayer.webp')">Default</button>
-                 </span>
-                </span>
-
-
-                <h1 class="mt-2 font-semibold text-md">Main Menu Background</h1>
-                <span class="flex flex-row">
-                    <input accept="image/webp" id="mainmenu-upload" type="file" class="w-full max-w-xs file-input file-input-xs file-input-bordered" />
-                    <button class="ml-2 border border-solid border-secondary btn btn-xs hover:border-white hover:scale-[1.02] active:scale-95" onclick="window.electron.deleteSkin('mainmenu')">Default</button>
-                </span>
-                
-                <div class="flex flex-col">
-                  <label for="flatLightmapToggle" class="flex gap-1 items-center text-xs">
-                    Use Flat Lightmaps 
-                    <span class="relative group">
-                      <abbr title="Make the map lighting completely even and slightly darker" class="no-underline cursor-help">
-                        <span class="flex justify-center items-center w-4 h-4 text-xs font-semibold rounded-full border border-gray-400">?</span>
-                      </abbr>
-                    </span>
-                  </label>
-                            <input type="range" id="influenceSlider"class="range range-primary range-sm" min="0" max="0.3" step="0.005" value="0.1" class="w-full">
-                </div>
-
-
-                <span class="flex flex-row">
-                  <h1 class="mt-2 text-md">Map Folders</h1>
-                </span>
-                
-                <span class="flex flex-wrap space-x-1">
-                    <button class="border border-solid border-secondary btn btn-sm hover:border-white hover:scale-[1.02] active:scale-95 mb-1" onclick="window.electron.openRSFolder('maps/manor')">Vineyard</button>
-                    <button class="border border-solid border-secondary btn btn-sm hover:border-white hover:scale-[1.02] active:scale-95 mb-1" onclick="window.electron.openRSFolder('maps/tf')">Factory</button>
-                    <button class="border border-solid border-secondary btn btn-sm hover:border-white hover:scale-[1.02] active:scale-95 mb-1" onclick="window.electron.openRSFolder('maps/industry')">Refinery</button>
-                    <button class="border border-solid border-secondary btn btn-sm hover:border-white hover:scale-[1.02] active:scale-95" onclick="window.electron.openRSFolder('maps/mlab')">Forest</button>
-                    <button class="border border-solid border-secondary btn btn-sm hover:border-white hover:scale-[1.02] active:scale-95" onclick="window.electron.openRSFolder('maps/neon')">Neo Tokyo</button>
-                </span>
-  
-              </div>
-
-            <div id="aimbot" class="hidden settings-page">            
-                <div class="flex flex-col items-center">
-                  <h1 class="text-xl font-bold">You've found a premium feature!</h1>
-                  <h1 class="text-md">The Lambda Client team has created a state of the art aimbot, exclusive to LC Premium members. It is undetected by DEADSHOT.io, and will be maintained in the future. <br>Premium can be purchased by sending $10 on CashApp to the LC account, <span class="font-bold">$sillyindividual43</span> (include your DEADSHOT username in the note)</h1>
-                </h1>
-                </div>
-            
-  
-              </div>
-
-                   <!-- Appearance Settings -->
-            <div id="appearance" class="hidden settings-page">
-              <h2 class="mb-2 text-xl font-bold">Appearance Settings</h2>
-              <div class="flex items-center space-x-2">
-                <label class="mb-0 w-1/2 font-semibold label text-base-content">Menu Theme</label>
-                <select class="select select-primary select-sm" data-choose-theme>
-                  <option value="black">Default</option>
-                 <option value="sunset">Sunset</option>
-                 <option value="nord">Nord</option>
-                 <option value="forest">Forest</option>
-                 <option value="aqua">Aqua</option>
-                 <option value="luxury">Luxury</option>
-                 <option value="dracula">Dracula</option>
-                 <option value="synthwave">Synthwave</option>
-                </select>
-              </div>
-              <div class="flex items-center space-x-2">
-                <label class="mb-0 w-1/2 font-semibold label text-base-content">Brainrot Mode</label>
-                <input type="checkbox" class="toggle toggle-sm" id="brainrot-toggle">
-              </div>
-              <div class="flex flex-col">
-                <label class="mb-0 w-1/2 font-semibold label text-base-content">Colorblind filters</label>
-                <div class="flex flex-wrap space-x-1">
-                <button class="border border-solid w-fit border-secondary btn btn-sm hover:border-accent hover:scale-[1.02] active:scale-95 mb-1" onclick="window.electron.sendCBFilter('normal')">No Filter</button>
-                <button class="border border-solid w-fit border-secondary btn btn-sm hover:border-accent hover:scale-[1.02] active:scale-95 mb-1" onclick="window.electron.sendCBFilter('protanopia')">Protanopia</button>
-                <button class="border border-solid w-fit border-secondary btn btn-sm hover:border-accent hover:scale-[1.02] active:scale-95 mb-1" onclick="window.electron.sendCBFilter('protanomaly')">Protanomaly</button>
-                <button class="border border-solid w-fit border-secondary btn btn-sm hover:border-accent hover:scale-[1.02] active:scale-95 mb-1" onclick="window.electron.sendCBFilter('deuteranopia')">Deuteranopia</button>
-                <button class="border border-solid w-fit border-secondary btn btn-sm hover:border-accent hover:scale-[1.02] active:scale-95 mb-1" onclick="window.electron.sendCBFilter('deuteranomaly')">Deuteranomaly</button>
-                <button class="border border-solid w-fit border-secondary btn btn-sm hover:border-accent hover:scale-[1.02] active:scale-95" onclick="window.electron.sendCBFilter('tritanopia')">Tritanopia</button>
-                <button class="border border-solid w-fit border-secondary btn btn-sm hover:border-accent hover:scale-[1.02] active:scale-95" onclick="window.electron.sendCBFilter('tritanomaly')">Tritanomaly</button>
-                <button class="border border-solid w-fit border-secondary btn btn-sm hover:border-accent hover:scale-[1.02] active:scale-95" onclick="window.electron.sendCBFilter('achromatopsia')">Achromatopsia</button>
-              </div>
-
-<!--Custom filter-->
-<div class="flex flex-wrap mt-2 space-x-4">
-  <div class="w-full">
-    <form id="customFilterForm" class="p-2 space-y-4 rounded border border-secondary">
-      <h2 class="mb-2 text-lg font-semibold">Custom Color Filter</h2>
-      <div class="space-y-3">
-        <div class="flex flex-col">
-          <label for="redSlider" class="text-xs">Red Strength</label>
-          <input type="range" id="redSlider"class="range range-primary range-sm" min="0" max="2" step="0.05" value="1" class="w-full">
-        </div>
-        <div class="flex flex-col">
-          <label for="greenSlider" class="text-xs">Green Strength</label>
-          <input type="range" id="greenSlider"class="range range-primary range-sm" min="0" max="2" step="0.05" value="1" class="w-full">
-        </div>
-        <div class="flex flex-col">
-          <label for="blueSlider" class="text-xs">Blue Strength</label>
-          <input type="range" id="blueSlider"class="range range-primary range-sm" min="0" max="2" step="0.05" value="1" class="w-full">
-        </div>
-        <div class="flex flex-col">
-          <label for="alphaSlider" class="text-xs">Alpha Strength</label>
-          <input type="range" id="alphaSlider"class="range range-primary range-sm" min="0" max="1" step="0.05" value="1" class="w-full">
-        </div>
-        <div class="flex flex-col">
-          <label for="influenceSlider" class="flex gap-1 items-center text-xs">
-            RGB Influence 
-            <span class="relative group">
-              <abbr title="How much each RGB value affects the other two" class="no-underline cursor-help">
-                <span class="flex justify-center items-center w-4 h-4 text-xs font-semibold rounded-full border border-gray-400">?</span>
-              </abbr>
-            </span>
-          </label>
-                    <input type="range" id="influenceSlider"class="range range-primary range-sm" min="0" max="0.5" step="0.005" value="0.1" class="w-full">
-        </div>
-      </div>
-      <div class="flex flex-col items-center w-full">
-        <div class="flex relative flex-row items-center p-2 rounded border border-secondary">
-          <button id="prevBtn" type="button" class="absolute left-0 z-10 p-1 text-lg font-bold text-white bg-transparent focus:outline-none">
-            &larr;
-          </button>
-          <svg width="0" height="0" class="absolute">
-            <filter id="customFilter">
-              <feColorMatrix type="matrix" 
-                values="1 0 0 0 0
-                        0 1 0 0 0
-                        0 0 1 0 0
-                        0 0 0 1 0" />
-            </filter>
-          </svg>
-          <img id="filterPreviewImage" src="./filterpreviews/factory.png" alt="Filter Preview" class="w-full max-w-xs" style="filter: url(#customFilter);">
-          <button id="nextBtn" type="button" class="absolute right-0 z-10 p-1 text-lg font-bold text-white bg-transparent focus:outline-none">
-            &rarr;
-          </button>
-        </div>
-      </div>
-      <button type="submit" class="border border-solid w-fit border-secondary btn btn-sm hover:border-white hover:scale-[1.02] active:scale-95">
-        Apply Custom Filter
-      </button>
-    </form>
-  </div>
-
-  
-</div>
-
-
-
-<!--end custom filter-->
-
-
-
-
-              
-
-              
-              </div>
-
-          
-
+            <div class="flex items-center space-x-2">
+              <label class="mb-0 w-1/2 label text-base-content">RPC Text</label>
+              <input
+                type="text"
+                class="input input-primary input-sm"
+                value="Wake up, Mr. Treeman..."
+                placeholder="Wake up, Mr. Treeman..."
+                id="rpc-text"
+              />
+              <button
+                onclick="window.electron.sendSettingChange(`rpc:true:${document.getElementById('rpc-text').value}`)"
+                class="btn btn-primary btn-sm"
+              >
+                Okay
+              </button>
             </div>
           </div>
+
+          <div id="swapper" class="hidden settings-page">
+            <h2 class="mb-2 text-xl font-bold">Resource Swapper</h2>
+            <button
+              class="border border-solid border-secondary btn btn-sm hover:border-white hover:scale-[1.02] active:scale-95"
+              onclick="window.electron.reloadDS()"
+            >
+              Apply Changes
+            </button>
+            <h1 class="mt-2 font-semibold text-md">AR</h1>
+            <span class="flex flex-col ml-4">
+              <h1 class="text-sm">Weapon</h1>
+              <span class="flex flex-row">
+                <input
+                  accept="image/webp"
+                  id="ar-upload"
+                  type="file"
+                  class="w-full max-w-xs file-input file-input-xs file-input-bordered"
+                />
+                <button
+                  class="ml-2 border border-solid border-secondary btn btn-xs hover:border-white hover:scale-[1.02] active:scale-95"
+                  onclick="window.electron.deleteSkin('weapons/ar2/arcomp.webp')"
+                >
+                  Default
+                </button>
+              </span>
+              <h1 class="text-sm">Player</h1>
+              <span class="flex flex-row">
+                <input
+                  accept="image/webp"
+                  id="ar-player-upload"
+                  type="file"
+                  class="w-full max-w-xs file-input file-input-xs file-input-bordered"
+                />
+                <button
+                  class="ml-2 border border-solid border-secondary btn btn-xs hover:border-white hover:scale-[1.02] active:scale-95"
+                  onclick="window.electron.deleteSkin('character/rookie.webp')"
+                >
+                  Default
+                </button>
+              </span>
+            </span>
+
+            <h1 class="mt-2 font-semibold text-md">Sniper</h1>
+            <span class="flex flex-col ml-4">
+              <h1 class="text-sm">Weapon</h1>
+              <span class="flex flex-row">
+                <input
+                  accept="image/webp"
+                  id="awp-upload"
+                  type="file"
+                  class="w-full max-w-xs file-input file-input-xs file-input-bordered"
+                />
+                <button
+                  class="ml-2 border border-solid border-secondary btn btn-xs hover:border-white hover:scale-[1.02] active:scale-95"
+                  onclick="window.electron.deleteSkin('weapons/awp/awpcomp.webp')"
+                >
+                  Default
+                </button>
+              </span>
+              <h1 class="text-sm">Player</h1>
+              <span class="flex flex-row">
+                <input
+                  accept="image/webp"
+                  id="awp-player-upload"
+                  type="file"
+                  class="w-full max-w-xs file-input file-input-xs file-input-bordered"
+                />
+                <button
+                  class="ml-2 border border-solid border-secondary btn btn-xs hover:border-white hover:scale-[1.02] active:scale-95"
+                  onclick="window.electron.deleteSkin('character/tuxedo.webp')"
+                >
+                  Default
+                </button>
+              </span>
+            </span>
+
+            <h1 class="mt-2 font-semibold text-md">SMG</h1>
+            <span class="flex flex-col ml-4">
+              <h1 class="text-sm">Weapon</h1>
+              <span class="flex flex-row">
+                <input
+                  accept="image/webp"
+                  id="smg-upload"
+                  type="file"
+                  class="w-full max-w-xs file-input file-input-xs file-input-bordered"
+                />
+                <button
+                  class="ml-2 border border-solid border-secondary btn btn-xs hover:border-white hover:scale-[1.02] active:scale-95"
+                  onclick="window.electron.deleteSkin('weapons/vector/vectorcomp.webp')"
+                >
+                  Default
+                </button>
+              </span>
+              <h1 class="text-sm">Player</h1>
+              <span class="flex flex-row">
+                <input
+                  accept="image/webp"
+                  id="smg-player-upload"
+                  type="file"
+                  class="w-full max-w-xs file-input file-input-xs file-input-bordered"
+                />
+                <button
+                  class="ml-2 border border-solid border-secondary btn btn-xs hover:border-white hover:scale-[1.02] active:scale-95"
+                  onclick="window.electron.deleteSkin('character/female.webp')"
+                >
+                  Default
+                </button>
+              </span>
+            </span>
+
+            <h1 class="mt-2 font-semibold text-md">Shotgun</h1>
+            <span class="flex flex-col ml-4">
+              <h1 class="text-sm">Weapon</h1>
+              <span class="flex flex-row">
+                <input
+                  accept="image/webp"
+                  id="shotgun-upload"
+                  type="file"
+                  class="w-full max-w-xs file-input file-input-xs file-input-bordered"
+                />
+                <button
+                  class="ml-2 border border-solid border-secondary btn btn-xs hover:border-white hover:scale-[1.02] active:scale-95"
+                  onclick="window.electron.deleteSkin('weapons/shotgun/shotguncomp.webp')"
+                >
+                  Default
+                </button>
+              </span>
+              <h1 class="text-sm">Player</h1>
+              <span class="flex flex-row">
+                <input
+                  accept="image/webp"
+                  id="shotgun-player-upload"
+                  type="file"
+                  class="w-full max-w-xs file-input file-input-xs file-input-bordered"
+                />
+                <button
+                  class="ml-2 border border-solid border-secondary btn btn-xs hover:border-white hover:scale-[1.02] active:scale-95"
+                  onclick="window.electron.deleteSkin('character/shotgunplayer.webp')"
+                >
+                  Default
+                </button>
+              </span>
+            </span>
+
+            <h1 class="mt-2 font-semibold text-md">Main Menu Background</h1>
+            <span class="flex flex-row">
+              <input
+                accept="image/webp"
+                id="mainmenu-upload"
+                type="file"
+                class="w-full max-w-xs file-input file-input-xs file-input-bordered"
+              />
+              <button
+                class="ml-2 border border-solid border-secondary btn btn-xs hover:border-white hover:scale-[1.02] active:scale-95"
+                onclick="window.electron.deleteSkin('mainmenu')"
+              >
+                Default
+              </button>
+            </span>
+
+            <span class="flex flex-row">
+              <h1 class="mt-2 text-md">Map Folders</h1>
+            </span>
+
+            <span class="flex flex-wrap space-x-1">
+              <button
+                class="border border-solid border-secondary btn btn-sm hover:border-white hover:scale-[1.02] active:scale-95 mb-1"
+                onclick="window.electron.openRSFolder('maps/manor')"
+              >
+                Vineyard
+              </button>
+              <button
+                class="border border-solid border-secondary btn btn-sm hover:border-white hover:scale-[1.02] active:scale-95 mb-1"
+                onclick="window.electron.openRSFolder('maps/tf')"
+              >
+                Factory
+              </button>
+              <button
+                class="border border-solid border-secondary btn btn-sm hover:border-white hover:scale-[1.02] active:scale-95 mb-1"
+                onclick="window.electron.openRSFolder('maps/industry')"
+              >
+                Refinery
+              </button>
+              <button
+                class="border border-solid border-secondary btn btn-sm hover:border-white hover:scale-[1.02] active:scale-95"
+                onclick="window.electron.openRSFolder('maps/mlab')"
+              >
+                Forest
+              </button>
+              <button
+                class="border border-solid border-secondary btn btn-sm hover:border-white hover:scale-[1.02] active:scale-95"
+                onclick="window.electron.openRSFolder('maps/neon')"
+              >
+                Neo Tokyo
+              </button>
+            </span>
+          </div>
+
+          <div id="aimbot" class="hidden settings-page">
+            <div class="flex flex-col items-center">
+              <h1 class="text-xl font-bold">You've found a premium feature!</h1>
+              <h1 class="text-md">
+                The Lambda Client team has created a state of the art aimbot,
+                exclusive to LC Premium members. It is undetected by
+                DEADSHOT.io, and will be maintained in the future. <br />Premium
+                can be purchased by sending $10 on CashApp to the LC account,
+                <span class="font-bold">$sillyindividual43</span> (include your
+                DEADSHOT username in the note)
+              </h1>
+            </div>
+          </div>
+
+          <div id="appearance" class="hidden settings-page">
+            <h2 class="mb-2 text-xl font-bold">Appearance Settings</h2>
+            <div class="flex items-center space-x-2">
+              <label class="mb-0 w-1/2 font-semibold label text-base-content"
+                >Menu Theme</label
+              >
+              <select class="select select-primary select-sm" data-choose-theme>
+                <option value="black">Default</option>
+                <option value="sunset">Sunset</option>
+                <option value="nord">Nord</option>
+                <option value="forest">Forest</option>
+                <option value="aqua">Aqua</option>
+                <option value="luxury">Luxury</option>
+                <option value="dracula">Dracula</option>
+                <option value="synthwave">Synthwave</option>
+              </select>
+            </div>
+            <div class="flex items-center space-x-2">
+              <label class="mb-0 w-1/2 font-semibold label text-base-content"
+                >Brainrot Mode</label
+              >
+              <input
+                type="checkbox"
+                class="toggle toggle-sm"
+                id="brainrot-toggle"
+              />
+            </div>
+            <div class="flex items-center space-x-2">
+              <label class="mb-0 w-1/2 font-semibold label text-base-content"
+                >Flat Lightmaps
+                <span class="relative group">
+                  <abbr
+                    title="REQUIRES RELOAD. Make the map lighting completely even and slightly darker"
+                    class="no-underline cursor-help"
+                  >
+                    <span
+                      class="flex justify-center items-center w-4 h-4 text-xs font-semibold rounded-full border border-gray-400"
+                      >?</span
+                    >
+                  </abbr>
+                </span>
+                </label
+              >
+              <input
+                type="checkbox"
+                class="toggle toggle-sm"
+                id="flatlightmapstoggle"
+              />
+            </div>
+     
+            <div class="flex items-center space-x-2">
+              <label class="mb-0 w-1/2 font-semibold label text-base-content"
+                >Stats</label
+              >
+              <input
+                type="checkbox"
+                class="toggle toggle-sm"
+                id="stats-toggle"
+              />
+            </div>
+            <div class="mt-1 ml-4 space-y-0">
+              <div class="flex items-center space-x-2">
+                <label class="mb-0 w-1/2 text-sm text-base-content">FPS</label>
+                <input
+                  type="checkbox"
+                  class="toggle toggle-xs"
+                  id="stats-fps-toggle"
+                />
+              </div>
+              <div class="flex items-center space-x-2">
+                <label class="mb-0 w-1/2 text-sm text-base-content">Ping</label>
+                <input
+                  type="checkbox"
+                  class="toggle toggle-xs"
+                  id="stats-ping-toggle"
+                />
+              </div>
+              <div class="flex items-center space-x-2">
+                <label class="mb-0 w-1/2 text-sm text-base-content"
+                  >CPU Usage</label
+                >
+                <input
+                  type="checkbox"
+                  class="toggle toggle-xs"
+                  id="stats-cpu-toggle"
+                />
+              </div>
+              <div class="flex items-center space-x-2">
+                <label class="mb-0 w-1/2 text-sm text-base-content"
+                  >RAM Usage</label
+                >
+                <input
+                  type="checkbox"
+                  class="toggle toggle-xs"
+                  id="stats-ram-toggle"
+                />
+              </div>
+              <div class="flex items-center space-x-2">
+                <label class="mb-0 w-1/2 text-sm text-base-content"
+                  >Uptime</label
+                >
+                <input
+                  type="checkbox"
+                  class="toggle toggle-xs"
+                  id="stats-uptime-toggle"
+                />
+              </div>
+            </div>
+
+            <div class="flex flex-col">
+              <label class="mb-0 w-1/2 font-semibold label text-base-content"
+                >Colorblind filters</label
+              >
+              <div class="flex flex-wrap space-x-1">
+                <button
+                  class="border border-solid w-fit border-secondary btn btn-sm hover:border-accent hover:scale-[1.02] active:scale-95 mb-1"
+                  onclick="window.electron.sendCBFilter('normal')"
+                >
+                  No Filter
+                </button>
+                <button
+                  class="border border-solid w-fit border-secondary btn btn-sm hover:border-accent hover:scale-[1.02] active:scale-95 mb-1"
+                  onclick="window.electron.sendCBFilter('protanopia')"
+                >
+                  Protanopia
+                </button>
+                <button
+                  class="border border-solid w-fit border-secondary btn btn-sm hover:border-accent hover:scale-[1.02] active:scale-95 mb-1"
+                  onclick="window.electron.sendCBFilter('protanomaly')"
+                >
+                  Protanomaly
+                </button>
+                <button
+                  class="border border-solid w-fit border-secondary btn btn-sm hover:border-accent hover:scale-[1.02] active:scale-95 mb-1"
+                  onclick="window.electron.sendCBFilter('deuteranopia')"
+                >
+                  Deuteranopia
+                </button>
+                <button
+                  class="border border-solid w-fit border-secondary btn btn-sm hover:border-accent hover:scale-[1.02] active:scale-95 mb-1"
+                  onclick="window.electron.sendCBFilter('deuteranomaly')"
+                >
+                  Deuteranomaly
+                </button>
+                <button
+                  class="border border-solid w-fit border-secondary btn btn-sm hover:border-accent hover:scale-[1.02] active:scale-95"
+                  onclick="window.electron.sendCBFilter('tritanopia')"
+                >
+                  Tritanopia
+                </button>
+                <button
+                  class="border border-solid w-fit border-secondary btn btn-sm hover:border-accent hover:scale-[1.02] active:scale-95"
+                  onclick="window.electron.sendCBFilter('tritanomaly')"
+                >
+                  Tritanomaly
+                </button>
+                <button
+                  class="border border-solid w-fit border-secondary btn btn-sm hover:border-accent hover:scale-[1.02] active:scale-95"
+                  onclick="window.electron.sendCBFilter('achromatopsia')"
+                >
+                  Achromatopsia
+                </button>
+              </div>
+
+              <!--Custom filter-->
+              <div class="flex flex-wrap mt-2 space-x-4">
+                <div class="w-full">
+                  <form
+                    id="customFilterForm"
+                    class="p-2 space-y-4 rounded border border-secondary"
+                  >
+                    <h2 class="mb-2 text-lg font-semibold">
+                      Custom Color Filter
+                    </h2>
+                    <div class="space-y-3">
+                      <div class="flex flex-col">
+                        <label for="redSlider" class="text-xs"
+                          >Red Strength</label
+                        >
+                        <input
+                          type="range"
+                          id="redSlider"
+                          class="range range-primary range-sm"
+                          min="0"
+                          max="2"
+                          step="0.05"
+                          value="1"
+                          class="w-full"
+                        />
+                      </div>
+                      <div class="flex flex-col">
+                        <label for="greenSlider" class="text-xs"
+                          >Green Strength</label
+                        >
+                        <input
+                          type="range"
+                          id="greenSlider"
+                          class="range range-primary range-sm"
+                          min="0"
+                          max="2"
+                          step="0.05"
+                          value="1"
+                          class="w-full"
+                        />
+                      </div>
+                      <div class="flex flex-col">
+                        <label for="blueSlider" class="text-xs"
+                          >Blue Strength</label
+                        >
+                        <input
+                          type="range"
+                          id="blueSlider"
+                          class="range range-primary range-sm"
+                          min="0"
+                          max="2"
+                          step="0.05"
+                          value="1"
+                          class="w-full"
+                        />
+                      </div>
+                      <div class="flex flex-col">
+                        <label for="alphaSlider" class="text-xs"
+                          >Alpha Strength</label
+                        >
+                        <input
+                          type="range"
+                          id="alphaSlider"
+                          class="range range-primary range-sm"
+                          min="0"
+                          max="1"
+                          step="0.05"
+                          value="1"
+                          class="w-full"
+                        />
+                      </div>
+                      <div class="flex flex-col">
+                        <label
+                          for="influenceSlider"
+                          class="flex gap-1 items-center text-xs"
+                        >
+                          RGB Influence
+                          <span class="relative group">
+                            <abbr
+                              title="How much each RGB value affects the other two"
+                              class="no-underline cursor-help"
+                            >
+                              <span
+                                class="flex justify-center items-center w-4 h-4 text-xs font-semibold rounded-full border border-gray-400"
+                                >?</span
+                              >
+                            </abbr>
+                          </span>
+                        </label>
+                        <input
+                          type="range"
+                          id="influenceSlider"
+                          class="range range-primary range-sm"
+                          min="0"
+                          max="0.5"
+                          step="0.005"
+                          value="0.1"
+                          class="w-full"
+                        />
+                      </div>
+                    </div>
+                    <div class="flex flex-col items-center w-full">
+                      <div
+                        class="flex relative flex-row items-center p-2 rounded border border-secondary"
+                      >
+                        <button
+                          id="prevBtn"
+                          type="button"
+                          class="absolute left-0 z-10 p-1 text-lg font-bold text-white bg-transparent focus:outline-none"
+                        >
+                          &larr;
+                        </button>
+                        <svg width="0" height="0" class="absolute">
+                          <filter id="customFilter">
+                            <feColorMatrix
+                              type="matrix"
+                              values="1 0 0 0 0
+                        0 1 0 0 0
+                        0 0 1 0 0
+                        0 0 0 1 0"
+                            />
+                          </filter>
+                        </svg>
+                        <img
+                          id="filterPreviewImage"
+                          src="./filterpreviews/factory.png"
+                          alt="Filter Preview"
+                          class="w-full max-w-xs"
+                          style="filter: url(#customFilter)"
+                        />
+                        <button
+                          id="nextBtn"
+                          type="button"
+                          class="absolute right-0 z-10 p-1 text-lg font-bold text-white bg-transparent focus:outline-none"
+                        >
+                          &rarr;
+                        </button>
+                      </div>
+                    </div>
+                    <button
+                      type="submit"
+                      class="border border-solid w-fit border-secondary btn btn-sm hover:border-white hover:scale-[1.02] active:scale-95"
+                    >
+                      Apply Custom Filter
+                    </button>
+                  </form>
+                </div>
+              </div>
+
+              <!--end custom filter-->
+            </div>
+          </div>
+        </div>
       </div>
     </div>
-  
+
     <script>
       function showPage(pageId) {
-        document.querySelectorAll('.settings-page').forEach(page => {
-          page.classList.add('hidden');
-        });
-        document.getElementById(pageId).classList.remove('hidden');
+        document.querySelectorAll('.settings-page').forEach((page) => {
+          page.classList.add('hidden')
+        })
+        document.getElementById(pageId).classList.remove('hidden')
       }
     </script>
     <script src="./settings.js"></script>
   </body>
-  
-  
 </html>

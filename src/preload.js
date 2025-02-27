@@ -1,9 +1,12 @@
+const electron = require('electron')
+const ipcRenderer = electron.ipcRenderer
 
-
-const statsBgColor = "#010203";
-const statsTextColor = "#ffffff";
+const statsBgColor = '#010203'
+const statsTextColor = '#ffffff'
 window.addEventListener('DOMContentLoaded', () => {
-    document.head.insertAdjacentHTML('beforeend', `
+  document.head.insertAdjacentHTML(
+    'beforeend',
+    `
         <style>
             .stats-container {
                 position: absolute;
@@ -14,7 +17,9 @@ window.addEventListener('DOMContentLoaded', () => {
                 color: ${statsTextColor};
                 font-family: 'Encode Sans SemiCondensed', sans-serif;
             }
-
+            .empty {
+              display:none
+            }
             .stats-table {
                 border-collapse: collapse;
                 width: fit-content;
@@ -38,101 +43,45 @@ window.addEventListener('DOMContentLoaded', () => {
                 text-align: right;
             }
         </style>
-    `);
-    function statsHTML(options) {
-        let html = `
-        <div id="stats" class="stats-container">
-            <table class="stats-table">
-        `;
-    
-        if (options.fps) {
-            html += `
-                <tr class="stats-row">
-                    <td class="stats-label">FPS:</td>
-                    <td id="fps" class="stats-value">--</td>
-                </tr>
-            `;
-        }
-    
-        if (options.ping) {
-            html += `
-                <tr class="stats-row">
-                    <td class="stats-label">Ping:</td>
-                    <td id="ping" class="stats-value">--</td>
-                </tr>
-            `;
-        }
-    
-        if (options.cpu) {
-            html += `
-                <tr class="stats-row">
-                    <td class="stats-label">CPU Usage:</td>
-                    <td id="cpu-usage" class="stats-value">--</td>
-                </tr>
-            `;
-        }
-    
-        if (options.ram) {
-            html += `
-                <tr class="stats-row">
-                    <td class="stats-label">RAM Usage:</td>
-                    <td id="ram-usage" class="stats-value">--</td>
-                </tr>
-            `;
-        }
-    
-        if (options.uptime) {
-            html += `
-                <tr class="stats-row">
-                    <td class="stats-label">Uptime:</td>
-                    <td id="uptime" class="stats-value">--</td>
-                </tr>
-            `;
-        }
-    
-        html += `
-            </table>
-        </div>
-        `;
-    
-        return html;
+    `
+  )
+  const statsDisplay = document.createElement('div')
+  statsDisplay.setAttribute('id', 'stats')
+  statsDisplay.setAttribute('class', 'stats-container')
+  document.body.insertAdjacentElement('beforeend', statsDisplay)
+  // Make stats container draggable
+  const statsContainer = document.getElementById('stats')
+  let isDragging = false
+  let offsetX = 0
+  let offsetY = 0
+
+  statsContainer.addEventListener('mousedown', (event) => {
+    isDragging = true
+    offsetX = event.clientX - statsContainer.offsetLeft
+    offsetY = event.clientY - statsContainer.offsetTop
+    statsContainer.classList.add('dragging')
+  })
+
+  document.addEventListener('mousemove', (event) => {
+    if (isDragging) {
+      statsContainer.style.left = `${event.clientX - offsetX}px`
+      statsContainer.style.top = `${event.clientY - offsetY}px`
     }
-    document.body.insertAdjacentHTML('beforeend', statsHTML({fps:true, ping:true, cpu:true, ram:true, uptime:true}));
+  })
 
+  document.addEventListener('mouseup', () => {
+    isDragging = false
+    statsContainer.classList.remove('dragging')
+  })
 
-    // Make stats container draggable
-    const statsContainer = document.getElementById('stats');
-    let isDragging = false;
-    let offsetX = 0;
-    let offsetY = 0;
-    
-    statsContainer.addEventListener('mousedown', (event) => {
-        isDragging = true;
-        offsetX = event.clientX - statsContainer.offsetLeft;
-        offsetY = event.clientY - statsContainer.offsetTop;
-        statsContainer.classList.add('dragging');
-    });
-    
-    document.addEventListener('mousemove', (event) => {
-        if (isDragging) {
-            statsContainer.style.left = `${event.clientX - offsetX}px`;
-            statsContainer.style.top = `${event.clientY - offsetY}px`;
-        }
-    });
-    
-    document.addEventListener('mouseup', () => {
-        isDragging = false;
-        statsContainer.classList.remove('dragging');
-    });
-    
-// colorblind filters SVG
-const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-svg.setAttribute('style', 'height:0px; width:0px');
-svg.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
-svg.setAttribute('version', '1.1');
-svg.setAttribute('id', 'colorblindFilters')
+  // colorblind filters SVG
+  const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg')
+  svg.setAttribute('style', 'height:0px; width:0px')
+  svg.setAttribute('xmlns', 'http://www.w3.org/2000/svg')
+  svg.setAttribute('version', '1.1')
+  svg.setAttribute('id', 'colorblindFilters')
 
-svg.innerHTML = `
+  svg.innerHTML = `
 <defs>
   <filter id="protanopia">
     <feColorMatrix in="SourceGraphic" type="matrix"
@@ -185,161 +134,240 @@ svg.innerHTML = `
 </filter>
 </defs>
 
-`;
-document.body.insertAdjacentElement('afterbegin', svg);
-
-// colorblind filters JS  
-const filterScript = document.createElement('script');
-filterScript.textContent = `
-const filters = {
-  normal: 'none',
-  protanopia: 'url(#protanopia)',
-  deuteranopia: 'url(#deuteranopia)',
-  tritanopia: 'url(#tritanopia)',
-  protanomaly: 'url(#protanomaly)',
-  deuteranomaly: 'url(#deuteranomaly)',
-  tritanomaly: 'url(#tritanomaly)',
-  achromatopsia: 'url(#achromatopsia)', 
-  custom: 'url(#custom)'
-};
-
-function applyFilter(type) {
-    const elements = document.querySelectorAll('canvas, iframe');
-    const filterValue = type === 'normal' ? filters.normal : filters[type];
-    elements.forEach(element => {
-      element.style.filter = filterValue;
-    });
-} 
-`;
-
-//custom filters js
-const customFilterScript = document.createElement('script');
-customFilterScript.textContent = `
-    function updateCustomFilter(matrix) {
-        // Get the SVG element by its ID
-        const svg = document.getElementById("colorblindFilters");
-        if (!svg) {
-          console.error("SVG element with id 'colorblindFilters' not found.");
-          return;
-        }
-    
-        // Ensure there is a <defs> element; create one if it doesn't exist
-        let defs = svg.querySelector("defs");
-        if (!defs) {
-          defs = document.createElementNS("http://www.w3.org/2000/svg", "defs");
-          svg.prepend(defs);
-        }
-    
-        // Check for an existing filter with id "custom"
-        let filter = defs.querySelector("#custom");
-        if (!filter) {
-          filter = document.createElementNS("http://www.w3.org/2000/svg", "filter");
-          filter.setAttribute("id", "custom");
-          defs.appendChild(filter);
-        }
-    
-        // Check for an existing feColorMatrix; create one if needed
-        let feColorMatrix = filter.querySelector("feColorMatrix");
-        if (!feColorMatrix) {
-          feColorMatrix = document.createElementNS("http://www.w3.org/2000/svg", "feColorMatrix");
-          feColorMatrix.setAttribute("in", "SourceGraphic");
-          feColorMatrix.setAttribute("type", "matrix");
-          filter.appendChild(feColorMatrix);
-        }
-    
-        // Convert the matrix object into a single string of values.
-        // We expect the object to have keys: row1, row2, row3, row4.
-        const rowKeys = ["row1", "row2", "row3", "row4"];
-        const rows = rowKeys.map(key => {
-          const row = matrix[key];
-    
-          // Debugging: Log exact issue
-          if (!row) {
-            console.error('Matrix property is missing or undefined.');
-            return "0, 0, 0, 0, 0"; // Default row to avoid breaking
-          }
-          if (!Array.isArray(row)) {
-            console.error('Matrix property is not an array:', row);
-            return "0, 0, 0, 0, 0"; // Default row to avoid breaking
-          }
-          if (row.length !== 5) {
-            console.error('Matrix property does not have exactly 5 values:', row);
-            return "0, 0, 0, 0, 0"; // Default row to avoid breaking
-          }
-    
-          return row.join(", ");
-        });
-    
-        const valuesString = rows.join(" ");
-    
-        // Update the values attribute of the feColorMatrix element
-        feColorMatrix.setAttribute("values", valuesString);
-        applyFilter('custom')
-    }
-    
-
-
 `
-console.log("pre")
-document.body.insertAdjacentElement('beforeend', filterScript);
-document.body.insertAdjacentElement('beforeend', customFilterScript);
-console.log("post")
+  document.body.insertAdjacentElement('afterbegin', svg)
 
-// brainrot mode overlay
-const brainrotScript = document.createElement('script');
-brainrotScript.textContent = `
-function toggleBrainrot(show) {
-  const videoUrls = [
-    "https://www.youtube.com/embed/3xWJ0FSgJVE?autoplay=1",
-    "https://www.youtube.com/embed/RnpO6tM6A8k?autoplay=1",
-    "https://www.youtube.com/embed/bXVcXbhhxcI?autoplay=1" ,
-    "https://www.youtube.com/embed/qmwgpPfDieI?autoplay=1"
-  ];
+  // colorblind filters
+  const cbFilterScript = require('./modules/cbfilters.js')
+  const cbFilterScriptElement = document.createElement('script')
+  cbFilterScriptElement.classList.add('lambda-module-colorblind-filters')
+  cbFilterScriptElement.innerHTML = cbFilterScript.applyFilter
+  document.body.insertAdjacentElement('beforeend', cbFilterScriptElement)
 
-  const randomVideoUrl = videoUrls[Math.floor(Math.random() * videoUrls.length)];
+  // custom filter
+  const customFilterScript = require('./modules/customColorFilter.js')
+  const customFilterScriptElement = document.createElement('script')
+  customFilterScriptElement.classList.add('lambda-module-custom-filters')
+  customFilterScriptElement.innerHTML = customFilterScript.updateCustomFilter
+  document.body.insertAdjacentElement('beforeend', customFilterScriptElement)
 
-  const existingOverlay = document.getElementById("youtube-overlay");
+  // brainrot mode overlay
+  const brainrotScript = require('./modules/brainrot.js')
+  const brainrotScriptElement = document.createElement('script')
+  brainrotScriptElement.classList.add('lambda-module-brainrot-mode')
+  brainrotScriptElement.innerHTML = brainrotScript.toggleBrainrot
+  document.body.insertAdjacentElement('beforeend', brainrotScriptElement)
 
-  if (show) {
-    if (!existingOverlay) {
-      const overlay = document.createElement("div");
-      overlay.id = "youtube-overlay";
-      overlay.style.position = "fixed";
-      overlay.style.top = "0";
-      overlay.style.left = "0";
-      overlay.style.width = "100%";
-      overlay.style.height = "100%";
-      overlay.style.zIndex = "9999";
-      overlay.style.backgroundColor = "rgba(0, 0, 0, 0.75)";
-      overlay.style.opacity = "0.25"; 
-      overlay.style.pointerEvents = "none";  
-      const iframe = document.createElement("iframe");
-      iframe.src = randomVideoUrl;
-      iframe.frameBorder = "0";
-      iframe.allow = "autoplay; encrypted-media";
-      iframe.style.position = "absolute";
-      iframe.style.top = "50%";
-      iframe.style.left = "50%";
-      iframe.style.transform = "translate(-50%, -50%)";
-      iframe.style.width = "100%"; // Adjust width as needed
-      iframe.style.height = "100%"; // Adjust height as needed
-      iframe.style.opacity = "1";  // Set the opacity to 100% for the iframe
+  // stats
+  const statsScript = require('./modules/stats.js')
+  const statsScriptElement = document.createElement('script')
+  statsScriptElement.classList.add('lambda-module-stats')
+  statsScriptElement.innerHTML = statsScript.toggleStats
+  statsScriptElement.innerHTML += statsScript.statsHTML
+  document.body.insertAdjacentElement('beforeend', statsScriptElement)
 
-      // Append the iframe to the overlay div
-      overlay.appendChild(iframe);
-      
-      // Append the overlay div to the body
-      document.body.appendChild(overlay);
+  // call stat updaters
+  statsScript.fps()
+  statsScript.ping()
+  ipcRenderer.on('cpu', (event, data) => {
+    if (document.getElementById('cpu-usage'))
+      document.getElementById('cpu-usage').innerHTML = data.toFixed(2) + '%'
+  })
+
+  ipcRenderer.on('mem', (event, data) => {
+    if (document.getElementById('ram-usage'))
+      document.getElementById('ram-usage').innerHTML = data.toFixed(2)
+  })
+
+  ipcRenderer.on('uptime', (event, data) => {
+    let seconds = Math.round(data)
+    let hours = Math.floor(seconds / 3600)
+    seconds %= 3600
+    let minutes = Math.floor(seconds / 60)
+    seconds %= 60
+
+    let formattedTime = [
+      hours ? `${hours}h` : '',
+      minutes ? `${minutes}m` : '',
+      seconds ? `${seconds}s` : '',
+    ]
+      .filter(Boolean)
+      .join(' ')
+
+    if (document.getElementById('uptime'))
+      document.getElementById('uptime').innerHTML = formattedTime || '0s'
+  })
+
+  // lambda chat
+  const lambdaChatScript = require('./modules/lambda-chat.js')
+  const lambdaChatScriptElement = document.createElement('script')
+  lambdaChatScriptElement.classList.add('lambda-module-global-chat')
+  lambdaChatScriptElement.innerHTML = 'let state = null\n'
+  lambdaChatScriptElement.innerHTML += lambdaChatScript.initP2PChat
+  document.body.insertAdjacentElement('beforeend', lambdaChatScriptElement)
+
+  // create chat elements
+  const wrapper = document.createElement('div')
+  wrapper.setAttribute(
+    'style',
+    'position: fixed; display:flex; flex-direction:column; top: 0; left: 0; width: 350px; height: 200px; z-index: 200; background-color: rgba(0, 0, 0, 0.28); color:white'
+  )
+  const messages = document.createElement('div')
+  messages.id = 'messages'
+  messages.setAttribute(
+    'style',
+    'display: flex; flex-direction: column; width: 100%; flex-grow: 1;margin-left:4px; font-size: 14px'
+  )
+  wrapper.appendChild(messages)
+  const chatInput = document.createElement('input')
+  chatInput.id = 'chat-input'
+  chatInput.disabled = true
+  chatInput.setAttribute(
+    'style',
+    'width: 100%;height:25px;background-color: transparent;border: 1px solid white;color:white; padding-left:4px; margin:1px'
+  )
+  wrapper.appendChild(chatInput)
+  chatInput.addEventListener('keydown', (event) => {
+    event.stopPropagation()
+  })
+  document.body.insertAdjacentElement('afterbegin', wrapper)
+
+  //get deadshot chat and give it an id for future reference
+  const observer = new MutationObserver((mutationsList, obs) => {
+    for (const mutation of mutationsList) {
+      if (mutation.type === 'childList') {
+        mutation.addedNodes.forEach((node) => {
+          if (node.nodeType === Node.ELEMENT_NODE) {
+            const el = node
+            if (
+              el.tagName === 'INPUT' &&
+              el.getAttribute('maxlength') === '100'
+            ) {
+              el.id = 'ds-chat'
+              obs.disconnect()
+            }
+          }
+        })
+      }
     }
-  } else {
-    // Remove the overlay if it exists
-    if (existingOverlay) {
-      existingOverlay.remove();
+  })
+  observer.observe(document.body, { childList: true, subtree: true })
+
+  const toggleButton = document.createElement('button')
+  toggleButton.textContent = 'Using DS Chat'
+  toggleButton.setAttribute('tabindex', '-1') // makes it so enter key doesnt click button
+  toggleButton.setAttribute(
+    'style',
+    'left: 0;z-index: 201;width:fit-content;background-color:transparent;color:white;border:1px solid white;margin:2px;padding: 2px;'
+  )
+
+  toggleButton.addEventListener('click', () => {
+    const dsChat = document.getElementById('ds-chat')
+    if (dsChat) {
+      if (chatInput.disabled) {
+        chatInput.disabled = false
+        dsChat.disabled = true
+        toggleButton.textContent = 'Using Lambda Chat'
+      } else {
+        chatInput.disabled = true
+        dsChat.disabled = false
+        toggleButton.textContent = 'Using DS Chat'
+      }
+    } else {
+      chatInput.disabled = !chatInput.disabled
+      toggleButton.textContent = chatInput.disabled
+        ? 'Using DS Chat'
+        : 'Using Lambda Chat'
+    }
+  })
+  wrapper.insertAdjacentElement('beforeend', toggleButton)
+  //force focus lambda chat if deadshot chat disabled
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Enter') {
+      const dsChat = document.getElementById('ds-chat')
+      if (dsChat && dsChat.disabled) {
+        const chatInput = document.getElementById('chat-input')
+        if (chatInput) {
+          chatInput.focus()
+        }
+      }
+    }
+  })
+
+  //chat init
+  function startChat(username) {
+    const chatConfig = {
+      msgBoxId: '#messages',
+      inputId: '#chat-input',
+      username: username,
+      loggingCallback: (level, message) => {
+        console.log(`[${level}] ${message}`)
+      },
+      sigSrv: 'ws://143.198.65.132:8080',
+    }
+
+    initP2PChat(chatConfig)
+  }
+
+  // check for user id thing and load chat accordingly
+  function initializeChat() {
+    try {
+      const dses = localStorage.getItem('dses')
+
+      if (!dses) {
+        startChat('Guest')
+      } else {
+        fetch('https://login.deadshot.io/login', {
+          headers: {
+            accept: '*/*',
+            'accept-language': 'en-US,en;q=0.9',
+            'content-type': 'application/json',
+            'sec-fetch-dest': 'empty',
+            'sec-fetch-mode': 'cors',
+            'sec-fetch-site': 'same-site',
+            'sec-gpc': '1',
+          },
+          referrer: 'https://deadshot.io/',
+          referrerPolicy: 'strict-origin-when-cross-origin',
+          body: `{\"idtoken\":"${localStorage.getItem('dses')}"}`,
+          method: 'POST',
+          mode: 'cors',
+          credentials: 'omit',
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            const username = data.username || 'Guest'
+            startChat(username)
+          })
+          .catch((error) => {
+            console.error('Error fetching user data:', error)
+            startChat('Guest')
+          })
+      }
+    } catch (error) {
+      console.log(
+        'something went wrong with lambda chat idk, exiting function (reload page to retry)'
+      )
+      return
     }
   }
-  }
-  
-`
-document.body.insertAdjacentElement('beforeend', brainrotScript)
 
-}); //DOMContentLoaded
+  // Intercept XHR and re check username on completion of login or logout
+  initializeChat()
+  ;(function () {
+    let open = XMLHttpRequest.prototype.open
+    XMLHttpRequest.prototype.open = function (method, url, ...args) {
+      if (url.includes('signout') || url.includes('signin')) {
+        let xhr = this
+        xhr.onreadystatechange = function () {
+          if (xhr.readyState === XMLHttpRequest.DONE) {
+            initializeChat()
+          }
+        }
+      }
+      return open.apply(this, [method, url, ...args])
+    }
+  })()
+
+  ipcRenderer.send('readyforsettings')
+}) //DOMContentLoaded
