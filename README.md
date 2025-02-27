@@ -41,7 +41,7 @@ Lambda Client adds the following features to the game:
 
 **Colorblind Filters**
 
-- Unlike justatree (the deadshot.io developer), we actually care about the colorblind community. As such, Lambda Client provides filters that attempt to correct the following types of colorblindness:
+- Lambda Client provides filters that attempt to correct the following types of colorblindness:
   - Protanopia
   - Deuteranopia
   - Tritanopia
