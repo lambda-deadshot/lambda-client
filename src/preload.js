@@ -42,6 +42,21 @@ window.addEventListener('DOMContentLoaded', () => {
             .stats-value {
                 text-align: right;
             }
+
+            /* message box scrollbar */
+            #messages::-webkit-scrollbar {
+              width: 8px;
+            }
+          
+            #messages::-webkit-scrollbar-track {
+              background: transparent;
+            }
+          
+            #messages::-webkit-scrollbar-thumb {
+              background: white;
+              border-radius: 4px;
+            }
+
         </style>
     `
   )
@@ -206,31 +221,86 @@ window.addEventListener('DOMContentLoaded', () => {
   lambdaChatScriptElement.innerHTML += lambdaChatScript.initP2PChat
   document.body.insertAdjacentElement('beforeend', lambdaChatScriptElement)
 
-  // create chat elements
-  const wrapper = document.createElement('div')
-  wrapper.setAttribute(
-    'style',
-    'position: fixed; display:flex; flex-direction:column; top: 0; left: 0; width: 350px; height: 200px; z-index: 200; background-color: rgba(0, 0, 0, 0.28); color:white'
-  )
-  const messages = document.createElement('div')
-  messages.id = 'messages'
-  messages.setAttribute(
-    'style',
-    'display: flex; flex-direction: column; width: 100%; flex-grow: 1;margin-left:4px; font-size: 14px'
-  )
-  wrapper.appendChild(messages)
-  const chatInput = document.createElement('input')
-  chatInput.id = 'chat-input'
-  chatInput.disabled = true
-  chatInput.setAttribute(
-    'style',
-    'width: 100%;height:25px;background-color: transparent;border: 1px solid white;color:white; padding-left:4px; margin:1px'
-  )
-  wrapper.appendChild(chatInput)
-  chatInput.addEventListener('keydown', (event) => {
-    event.stopPropagation()
-  })
-  document.body.insertAdjacentElement('afterbegin', wrapper)
+// Create chat wrapper
+const wrapper = document.createElement('div');
+wrapper.setAttribute(
+  'style',
+  'position: fixed; display: flex; flex-direction: column; top: 0; left: 0; width: 350px; height: 200px; z-index: 200; background-color: rgba(0, 0, 0, 0.28); color:white'
+);
+
+// Create main chat container
+const chatContainer = document.createElement('div');
+chatContainer.setAttribute(
+  'style',
+  'display: flex; width: 100%; height: 100%;'
+);
+
+// Create peer list
+const peers = document.createElement('div');
+peers.id = 'peerDisplay';
+peers.setAttribute(
+  'style',
+  'width: 125px; display: flex; flex-direction: row; padding: 4px; border-right: 1px solid white; overflow-y: auto; font-size: 14px; transition: width 0.3s ease;'
+);
+const peerlist = document.createElement('div')
+peerlist.id = 'chat-peers'
+peerlist.setAttribute(
+  'style',
+  'display:flex; flex-direction:column'
+)
+peers.appendChild(peerlist)
+chatContainer.appendChild(peers);
+
+// Create toggle button
+const peerToggleButton = document.createElement('button');
+peerToggleButton.innerText = '☰';
+peerToggleButton.id = 'toggle-peers';
+peerToggleButton.setAttribute(
+  'style',
+  'background: transparent; color: white; border: none; cursor: pointer; font-size: 16px;'
+);
+peers.insertAdjacentElement('afterend', peerToggleButton);
+
+let isCollapsed = false;
+
+peerToggleButton.addEventListener('click', () => {
+  if (isCollapsed) {
+    peers.style.width = '0px';
+  } else {
+    peers.style.width = '125px';
+  }
+  isCollapsed = !isCollapsed;
+});
+
+
+// Create messages container
+const messages = document.createElement('div');
+messages.id = 'messages';
+messages.setAttribute(
+  'style',
+  'overflow-y: scroll; width:100%'
+);
+
+chatContainer.appendChild(messages);
+
+// Append chat container to wrapper
+wrapper.appendChild(chatContainer);
+
+// Create chat input
+const chatInput = document.createElement('input');
+chatInput.id = 'chat-input';
+chatInput.disabled = true;
+chatInput.setAttribute(
+  'style',
+  'width: 100%; height: 25px; background-color: transparent; border: 1px solid white; color:white; padding-left: 4px; margin: 1px'
+);
+wrapper.appendChild(chatInput);
+
+chatInput.addEventListener('keydown', (event) => {
+  event.stopPropagation();
+});
+
+document.body.insertAdjacentElement('afterbegin', wrapper);
 
   //get deadshot chat and give it an id for future reference
   const observer = new MutationObserver((mutationsList, obs) => {
@@ -303,7 +373,7 @@ window.addEventListener('DOMContentLoaded', () => {
       loggingCallback: (level, message) => {
         console.log(`[${level}] ${message}`)
       },
-      sigSrv: 'ws://143.198.65.132:8080',
+      sigSrv: 'ws://localhost:8080',
     }
 
     initP2PChat(chatConfig)

@@ -76,32 +76,45 @@ function initP2PChat(config) {
     if (!state.myPeerId && data.senderId) {
       state.myPeerId = data.senderId
     }
-
+    function updatePeerList() {
+      const peerListElement = document.getElementById('chat-peers');
+      if (!peerListElement) return;
+    
+      peerListElement.innerHTML = '<h1 style="font-size: 14px">Online:</h1>'
+    
+      for (const username of state.peerUsernames.values()) {
+        const listItem = document.createElement('div');
+        listItem.textContent = username;
+        listItem.setAttribute('style', 'margin-bottom: 4px;');
+        peerListElement.appendChild(listItem);
+      }
+    }
+    
     switch (data.type) {
       case 'existing-peers':
         for (const peer of data.peers) {
-          state.peerUsernames.set(peer.clientId, peer.username)
-          await createPeerConnection(peer.clientId, true)
+          state.peerUsernames.set(peer.clientId, peer.username);
+          await createPeerConnection(peer.clientId, true);
         }
-        break
+        updatePeerList();
+        break;
       case 'new-peer':
-        state.peerUsernames.set(data.peerId, data.username)
-        await createPeerConnection(data.peerId, false)
-        break
+        state.peerUsernames.set(data.peerId, data.username);
+        await createPeerConnection(data.peerId, false);
+        updatePeerList();
+        break;
       case 'offer':
-        state.peerUsernames.set(data.senderId, data.username)
-        await handleOffer(data)
-        break
-      case 'answer':
-        await handleAnswer(data)
-        break
-      case 'ice-candidate':
-        await handleIceCandidate(data)
-        break
+        state.peerUsernames.set(data.senderId, data.username);
+        await handleOffer(data);
+        updatePeerList();
+        break;
       case 'peer-disconnected':
-        handlePeerDisconnection(data.peerId, data.username)
-        break
+        state.peerUsernames.delete(data.peerId);
+        handlePeerDisconnection(data.peerId, data.username);
+        updatePeerList();
+        break;
     }
+    
   }
 
   async function createPeerConnection(peerId, initiator) {
